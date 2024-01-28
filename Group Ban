@@ -1,0 +1,47 @@
+---------------------------------------------------------
+-- Service mentioning
+---------------------------------------------------------
+local GroupService = game:GetService("GroupService")
+local players = game:GetService("Players")
+---------------------------------------------------------
+-- Safe Group Bypass Blacklisted server ban.
+---------------------------------------------------------
+local SafeGroupId = 6932522
+local MinimumSafeRank = 30
+---------------------------------------------------------
+-- Banned Servers
+---------------------------------------------------------
+local BannedGroupID = {14091685}
+---------------------------------------------------------
+--Functions
+---------------------------------------------------------
+-- Safe group
+
+local function IsPlayerInSafeGroup(Player)
+	local playerRank = Player:GetRankInGroup(SafeGroupId)
+	return playerRank >= MinimumSafeRank
+end
+
+-- Banned Group Check
+local function IsPlayerInBannedGroup(player)
+	for _, GroupID in pairs(BannedGroupID) do
+		if player:IsInGroup(GroupID) then
+			return GroupID
+		end
+	end
+	return nil
+end
+
+-- Player Handeling function
+local function OnPlayerAdded(Player)
+	if IsPlayerInSafeGroup(Player) then
+		return
+			elseif IsPlayerInBannedGroup(Player) then
+		local BannedGroupID = IsPlayerInBannedGroup(Player)
+		local GroupInfo = GroupService:GetGroupInfoAsync(BannedGroupID)
+		Player:kick("You have been banned because you are part of a Blacklisted server:"..GroupInfo.Name)
+		
+	end
+end
+
+players.PlayerAdded:Connect(OnPlayerAdded)
